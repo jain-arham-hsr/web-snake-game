@@ -4,10 +4,10 @@ const patch = 32;
 var food_x = 13;
 var food_y = 8;
 var snake = [{ x: 5, y: 8 }, { x: 4, y: 8 }, { x: 3, y: 8 }];
-var drag = 100;
+var drag = 65;
 var movement;
 var direction = "right";
-var gameOn = true;
+var gameOn = false;
 
 window.onload = function() {
   placeFood();
@@ -88,34 +88,32 @@ function moveUp() {
 }
 
 document.onkeydown = function(event) {
-  switch (event.keyCode) {
-    case 37:
-      if (direction !== "right" && gameOn === true) {
-        clearInterval(movement);
+  console.log(event.key);
+  switch (event.key) {
+    case "ArrowLeft":
+      if (direction !== "right") {
         direction = "left";
-        movement = setInterval(moveLeft, drag);
       }
       break;
-    case 38:
-      if (direction !== "down" && gameOn === true) {
-        clearInterval(movement);
+    case "ArrowUp":
+      if (direction !== "down") {
         direction = "up";
-        movement = setInterval(moveUp, drag);
       }
       break;
-    case 39:
-      if (direction !== "left" && gameOn === true) {
-        clearInterval(movement);
+    case "ArrowRight":
+      console.log(true);
+      if (direction !== "left") {
         direction = "right";
-        movement = setInterval(moveRight, drag);
+        if (!gameOn) {
+          gameOn = true;
+          requestAnimationFrame(loop);
+        }
       }
       break;
-
-    case 40:
-      if (direction !== "up" && gameOn === true) {
-        clearInterval(movement);
+    case "ArrowDown":
+      if (direction !== "up") {
+        console.log(event.key);
         direction = "down";
-        movement = setInterval(moveDown, drag);
       }
       break;
   }
@@ -207,3 +205,40 @@ function restart() {
   placeFood();
   drawSnake();
 }
+
+
+function renderGame() {
+  let move;
+  switch (direction) {
+    case "up":
+      move = moveUp;
+      break;
+    case "down":
+      move = moveDown;
+      break;
+    case "left":
+      move = moveLeft;
+      break;
+    case "right":
+      move = moveRight;
+  }
+  move();
+}
+
+function sleep(milliseconds) {
+  const date = Date.now();
+  let currentDate = null;
+  do {
+    currentDate = Date.now();
+  } while (currentDate - date < milliseconds);
+}
+
+function loop() {
+  if (gameOn){
+    renderGame();
+    sleep(drag);
+    requestAnimationFrame(loop);
+  }
+}
+
+requestAnimationFrame(loop);
