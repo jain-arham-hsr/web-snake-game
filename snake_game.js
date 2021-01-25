@@ -1,8 +1,8 @@
 const canvas = document.getElementById("ground");
 const ctx = canvas.getContext("2d");
 const patch = 32;
-var food_x = 13;
-var food_y = 8;
+var foodX = 12;
+var foodY = 8;
 var snake = [{ x: 5, y: 8 }, { x: 4, y: 8 }, { x: 3, y: 8 }];
 var drag = 65;
 var movement;
@@ -16,7 +16,17 @@ window.onload = function() {
 
 function placeFood() {
   const food_img = document.getElementById("food");
-  ctx.drawImage(food_img, (food_x - 1) * patch, (food_y - 1) * patch);
+  let location_valid = false;
+  while (!location_valid) {
+    if (snake.length != 3) {
+      foodX = Math.floor(Math.random() * 17 + 1);
+      foodY = Math.floor(Math.random() * 15 + 1);
+    }
+    location_valid = snake.every(segment => {
+      return segment.x != foodX || segment.y != foodY;
+    });
+  }
+  ctx.drawImage(food_img, (foodX - 1) * patch, (foodY - 1) * patch);
 }
 
 function drawSnake() {
@@ -88,7 +98,6 @@ function moveUp() {
 }
 
 document.onkeydown = function(event) {
-  console.log(event.key);
   switch (event.key) {
     case "ArrowLeft":
       if (direction !== "right") {
@@ -101,7 +110,6 @@ document.onkeydown = function(event) {
       }
       break;
     case "ArrowRight":
-      console.log(true);
       if (direction !== "left") {
         direction = "right";
         if (!gameOn) {
@@ -112,7 +120,6 @@ document.onkeydown = function(event) {
       break;
     case "ArrowDown":
       if (direction !== "up") {
-        console.log(event.key);
         direction = "down";
       }
       break;
@@ -120,22 +127,10 @@ document.onkeydown = function(event) {
 };
 
 function foodCollision() {
-  if (snake[0].x === food_x && snake[0].y === food_y) {
+  if (snake[0].x === foodX && snake[0].y === foodY) {
     var newSegment = { x: snake[0].x, y: snake[0].y };
     snake.push(newSegment);
     addScore();
-    var isPatchEmpty = false;
-    while (isPatchEmpty === false) {
-      food_x = Math.floor(Math.random() * 17) + 1;
-      food_y = Math.floor(Math.random() * 15) + 1;
-      for (i = 0; i < snake.length; i++) {
-        if (snake[i].x === food_x || snake[i].y === food_y) {
-          isPatchEmpty = false;
-        } else {
-          isPatchEmpty = true;
-        }
-      }
-    }
     placeFood();
   }
 }
@@ -194,8 +189,8 @@ function collisionTest() {
 
 function restart() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-  food_x = 13;
-  food_y = 8;
+  foodX = 13;
+  foodY = 8;
   snake = [{ x: 5, y: 8 }, { x: 4, y: 8 }, { x: 3, y: 8 }];
   document.getElementById("score").style.backgroundColor = "#4a752c";
   document.getElementById("score").style.color = "#ffffff";
