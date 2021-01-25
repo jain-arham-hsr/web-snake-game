@@ -5,9 +5,9 @@ var foodX = 12;
 var foodY = 8;
 var snake = [{ x: 5, y: 8 }, { x: 4, y: 8 }, { x: 3, y: 8 }];
 var drag = 65;
-var movement;
-var direction = "right";
-var gameOn = false;
+var facingDirection = "right";
+var isGameOn = false;
+var isGameOver = false;
 
 window.onload = function() {
   placeFood();
@@ -100,27 +100,27 @@ function moveUp() {
 document.onkeydown = function(event) {
   switch (event.key) {
     case "ArrowLeft":
-      if (direction !== "right") {
-        direction = "left";
+      if (facingDirection !== "right") {
+        facingDirection = "left";
       }
       break;
     case "ArrowUp":
-      if (direction !== "down") {
-        direction = "up";
+      if (facingDirection !== "down") {
+        facingDirection = "up";
       }
       break;
     case "ArrowRight":
-      if (direction !== "left") {
-        direction = "right";
-        if (!gameOn) {
-          gameOn = true;
+      if (facingDirection !== "left") {
+        facingDirection = "right";
+        if (!isGameOn) {
+          isGameOn = true;
           requestAnimationFrame(loop);
         }
       }
       break;
     case "ArrowDown":
-      if (direction !== "up") {
-        direction = "down";
+      if (facingDirection !== "up") {
+        facingDirection = "down";
       }
       break;
   }
@@ -136,27 +136,15 @@ function foodCollision() {
 }
 
 function wallCollision() {
-  switch (direction) {
-    case "up":
-      if (snake[0].y < 1) {
-        snake[0].y = 15;
-      }
-      break;
-    case "down":
-      if (snake[0].y > 15) {
-        snake[0].y = 1;
-      }
-      break;
-    case "left":
-      if (snake[0].x < 1) {
-        snake[0].x = 18;
-      }
-      break;
-    case "right":
-      if (snake[0].x > 17) {
-        snake[0].x = 1;
-      }
-      break;
+  if (snake[0].y < 1) {
+    snake[0].y = 15;
+  } else if (snake[0].y > 15) {
+    snake[0].y = 1;
+  }
+  if (snake[0].x < 1) {
+    snake[0].x = 18;
+  } else if (snake[0].x > 17) {
+    snake[0].x = 1;
   }
 }
 
@@ -173,8 +161,8 @@ function addScore() {
 }
 
 function gameOver() {
-  gameOn = false;
-  clearInterval(movement);
+  isGameOn = false;
+  isGameOver = true;
   document.getElementById("score").style.backgroundColor = "#ffffff";
   document.getElementById("score").style.color = "#e8481d";
   document.getElementById("score").innerHTML =
@@ -195,8 +183,8 @@ function restart() {
   document.getElementById("score").style.backgroundColor = "#4a752c";
   document.getElementById("score").style.color = "#ffffff";
   document.getElementById("score").innerHTML = "Score: 0";
-  gameOn = true;
-  direction = "right";
+  isGameOn = true;
+  facingDirection = "right";
   placeFood();
   drawSnake();
 }
@@ -204,7 +192,7 @@ function restart() {
 
 function renderGame() {
   let move;
-  switch (direction) {
+  switch (facingDirection) {
     case "up":
       move = moveUp;
       break;
@@ -229,7 +217,7 @@ function sleep(milliseconds) {
 }
 
 function loop() {
-  if (gameOn){
+  if (isGameOn && !isGameOver){
     renderGame();
     sleep(drag);
     requestAnimationFrame(loop);
