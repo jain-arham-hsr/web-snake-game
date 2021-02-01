@@ -1,4 +1,4 @@
-const canvas = document.getElementById("ground");
+const canvas = document.getElementById("garden");
 const foodImg = document.getElementById("food");
 const ctx = canvas.getContext("2d");
 const patch = 32;
@@ -34,7 +34,7 @@ Snake.prototype.renderSnake = function() {
 Snake.prototype.move = function(){
   const direction = this.facingDirection;
   const head = this.bodySegments[0];
-  ctx.clearRect((head.x - 1) * patch, (head.y - 1) * patch, 32, 32);
+  ctx.clearRect((head.x - 1) * patch, (head.y - 1) * patch, patch, patch);
   for (i = this.bodySegments.length - 1; i > 0; i--) {
     var x = this.bodySegments[i].x - 1;
     var y = this.bodySegments[i].y - 1;
@@ -161,6 +161,22 @@ function endGame() {
   document.getElementById("score").style.color = "#e8481d";
   document.getElementById("score").innerHTML =
     "Game Over - Your Score: " + (snake.bodySegments.length - 3);
+  document.getElementById("restartBtn").style.display = "block";
+}
+
+
+// Resets the game components to their original state
+function restageGame() {
+  if (gameStatus == "Over") {
+    document.getElementById("score").style.backgroundColor = "#4a752c";
+    document.getElementById("score").style.color = "#fff";
+    document.getElementById("score").innerHTML = "Score: 0";
+    ctx.clearRect(0, 0, 17 * patch, 15 * patch);
+    snake = new Snake();
+    food = new Food();
+    gameStatus = "Staged";
+    document.getElementById("restartBtn").style.display = "none";
+  }
 }
 
 
